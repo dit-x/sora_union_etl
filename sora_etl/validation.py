@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
-from prefect import task
+from prefect import task, flow
+import google.cloud.bigquery as bigquery
 from sora_etl.logger_config import setup_logger
 
 
@@ -39,16 +40,16 @@ expected_task_schema = {
 }
 
 expected_dim_time_schema = {
-    'date': 'datetime64[ns]',       
+    'date': pd.StringDtype(),       
     'day_of_week': pd.StringDtype(),
-    'day_of_week_number': 'int64',  
-    'day_of_month': 'int64',        
-    'day_of_year': 'int64',         
-    'week_of_year': 'int64',        
-    'month': 'int64',               
+    'day_of_week_number': 'int32',  
+    'day_of_month': 'int32',        
+    'day_of_year': 'int32',         
+    'week_of_year': 'int32',        
+    'month': 'int32',               
     'month_name': pd.StringDtype(), 
-    'quarter': 'int64',             
-    'year': 'int64',                
+    'quarter': 'int32',             
+    'year': 'int32',                
     'is_weekend': 'bool'            
 }
 
@@ -59,17 +60,18 @@ expected_fact_schema = {
     'role_id': pd.StringDtype(),
     'person_id': pd.StringDtype(),
     'task_id': pd.StringDtype(),
-    'date': 'datetime64[ns]',
+    'date': pd.StringDtype(),
     'billable': 'bool',
     'hours_logged': 'float64',
+    'estimated_hours': 'float64',
     'task_note': pd.StringDtype(),
-    'start_date': 'datetime64[ns]',
-    'end_date': 'datetime64[ns]'
+    'start_date': pd.StringDtype(),
+    'end_date': pd.StringDtype(),
 }
 
 
-@task(log_prints=True, tags=["validate_data"])
-def validate_schema(df: pd.DataFrame, expected_schema: dict) -> bool:
+# @task(log_prints=True, tags=["validate_data"])
+def table_schema(df: pd.DataFrame, expected_schema: dict) -> bool:
     """
     Validates the schema of a Pandas DataFrame against an expected schema.
     
@@ -85,13 +87,45 @@ def validate_schema(df: pd.DataFrame, expected_schema: dict) -> bool:
     missing_columns = [col for col in expected_schema.keys() if col not in df.columns]
     if missing_columns:
         logger.error(f"Missing columns in DataFrame: {missing_columns}")
-        return False
+        raise ValueError(f"Missing columns in DataFrame: {missing_columns}")
     
-    for column, expected_dtype in expected_schema.items():
-        actual_dtype = df[column].dtype
-        if not pd.api.types.is_dtype_equal(actual_dtype, expected_dtype):
-            logger.error(f"Column '{column}' has incorrect type: expected {expected_dtype}, but got {actual_dtype}")
-            return False
+    for col, expected_dtype in expected_schema.items():
+        actual_dtype = df[col].dtype
+        
+        # Handle string columns (either StringDtype or object)
+        if expected_dtype == pd.StringDtype():
+            if not pd.api.types.is_string_dtype(df[col]):
+                raise ValueError(f"Column '{col}' has incorrect type: expected string, but got {actual_dtype}")
+        elif expected_dtype == 'int32' and actual_dtype == 'int64':
+            continue
+        elif expected_dtype == 'int32' and actual_dtype == 'int32':
+            continue
+        elif expected_dtype == 'int64' and actual_dtype == 'int64':
+            continue
+        elif actual_dtype != expected_dtype:
+            raise ValueError(f"Column '{col}' has incorrect type: expected {expected_dtype}, but got {actual_dtype}")
     
-    print("Schema validation passed.")
+    logger.info("Schema validation passed successfully.")
+    return True
+
+
+@task(name="Validate Schema")
+def validate_schema(table_data: dict, fact_table: dict):
+
+    table_data = table_data | fact_table
+    for table, df in table_data.items():
+        if table == 'dim_clients':
+            table_schema(df, expected_client_schema)
+        elif table == 'dim_projects':
+            table_schema(df, expected_project_schema)
+        elif table == 'dim_persons':
+            table_schema(df, expected_person_schema)
+        elif table == 'dim_roles':
+            table_schema(df, expected_role_schema)
+        elif table == 'dim_tasks':
+            table_schema(df, expected_task_schema)
+        elif table == 'dim_time':
+            table_schema(df, expected_dim_time_schema)
+        elif table == 'fact_work_tracking':
+            table_schema(df, expected_fact_schema)
     return True
