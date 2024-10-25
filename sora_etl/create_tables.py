@@ -9,7 +9,6 @@ logger = setup_logger(
     name=__name__,
     log_file='./logs/create_table.log',
     level=logging.INFO,
-    log_format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 # All DDL queries to create BigQuery tables

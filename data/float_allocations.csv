@@ -1,0 +1,14 @@
+Client,Project,Role,Name,Task,Start Date,End Date,Estimated Hours
+Client 1,Website Development,Product Designer,Isabella Rodriguez,Design,2023-07-03,2023-07-24,112
+Client 1,Website Development,Design Manager,John Smith,Design,2023-07-03,2023-07-24,24
+Client 1,Website Development,Front End Engineer,Liu Wei,Development,2023-07-31,2023-08-28,189
+Client 1,Website Development,QA Engineer,Emily Patel,Testing,2023-08-21,2023-09-04,77
+Client 1,Website Development,Project Manager,Ali Khan,Management,2023-07-03,2023-09-04,92
+Client 1,Brand Guideline,Brand Designer,Xu Li,Design,2023-07-03,2023-07-24,112
+Client 1,Brand Guideline,Design Manager,John Smith,Design,2023-07-03,2023-07-24,32
+Client 1,Brand Guideline,Project Manager,Ali Khan,Management,2023-07-03,2023-07-24,24
+Client 2,Book Localization to Ukraine,Localization Specialist UK,Vladyslav Shevchenko,Localization,2023-07-10,2023-08-14,182
+Client 2,Book Localization to Ukraine,Brand Designer,Xu Li,Design,2023-07-24,2023-08-28,182
+Client 2,Book Localization to Ukraine,Design Manager,John Smith,Design,2023-07-24,2023-08-28,52
+Client 2,Book Localization to Ukraine,Brand Designer,Ana Suarez,Design,2023-07-24,2023-08-28,0
+Client 2,Book Localization to Ukraine,Project Manager,Ali Khan,Management,2023-07-10,2023-08-28,36

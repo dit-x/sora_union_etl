@@ -1,14 +1,21 @@
-import sys
-import os
-sys.path.append(os.path.abspath('/Users/dit/Work/interviews/sora/sora_etl/'))
-
 import google.cloud.bigquery as bigquery
+import json
 
+# read .env file
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+# Set the environment variables
+CONFIG_PATH = os.getenv('CONFIG_PATH')
 DATASET_NAME = "sora_dataset"
 
-path = "./.credentials/google.json"
-client = bigquery.Client.from_service_account_json(path)
+with open(CONFIG_PATH, 'r') as file:
+    config = json.load(file)
+
+
+client = bigquery.Client.from_service_account_json(config["google_path"])
 PROJECT_NAME = client.project
 
 table_name = {

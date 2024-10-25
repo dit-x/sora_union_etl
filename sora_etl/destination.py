@@ -10,7 +10,6 @@ logger = setup_logger(
     name=__name__,
     log_file='./logs/destination.log',
     level=logging.INFO,
-    log_format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 

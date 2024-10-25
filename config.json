@@ -1,4 +1,5 @@
 {
-    "float_path": "/Users/dit/Work/interviews/sora/data/float_allocations.csv",
-    "clickup_path": "/Users/dit/Work/interviews/sora/data/clickup.csv"
+    "float_path": "./data/float_allocations.csv",
+    "clickup_path": "./data/clickup.csv",
+    "google_path": "./.credentials/google.json"
 }
